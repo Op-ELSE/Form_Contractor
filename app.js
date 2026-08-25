@@ -1,16 +1,7 @@
-// ==========================================================================
-// APP LOGIC - ABB SURVEY PLATFORM (GITHUB ISSUES AS DATABASE)
-// ==========================================================================
-
-// *** CONFIGURACIÓN GITHUB ISSUES (BASE DE DATOS GRATUITA / SIN PREMIUM) ***
-// 1. Crea un Personal Access Token (Classic o Fine-Grained) en GitHub con permisos de 'issues' (read & write).
-// 2. Coloca aquí tu usuario/organización, el nombre del repositorio y el Token:
-const GITHUB_CONFIG = {
-const GITHUB_CONFIG = {
-    owner: "op-else",                    // ✅ Ya configurado
-    repo: "Form_Contractor",             // ✅ Ya configurado
-    token: "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",        // Token: ghp_... o github_pat_...
-    labels: ["encuesta", "satisfaccion-servicio"]
+// *** CONFIGURACIÓN DE ENVÍO POR CORREO (COMPATIBLE CON ABB DLP) ***
+const EMAIL_CONFIG = {
+    destinationEmail: "geraldine.garcia-alarcon@pe.abb.com",
+    subjectPrefix: "[ENCUESTA_ABB_DATA]"
 };
 
 // Global state variables
@@ -251,52 +242,7 @@ function submitSupervisorEval() {
     }
 }
 
-// Format Issue body with both human-readable Markdown and structured JSON
-function formatIssueBody(surveyData) {
-    const jsonString = JSON.stringify(surveyData, null, 2);
-
-    let supervisorsSummary = surveyData.evaluacionesSupervisores.map(sup => {
-        return `#### 👤 Supervisor: **${sup.supervisorName}**
-- **HSE**:
-  - Equipos / Herramientas: **${sup.equipos}** ${sup.equiposComentario ? `(_${sup.equiposComentario}_)` : ""}
-  - Uniforme y EPPs: **${sup.epp}** ${sup.eppComentario ? `(_${sup.eppComentario}_)` : ""}
-  - Capaz de resolver consultas: **${sup.resolver}** ${sup.resolverComentario ? `(_${sup.resolverComentario}_)` : ""}
-  - Llenado de seguridad: **${sup.documental}** ${sup.documentalComentario ? `(_${sup.documentalComentario}_)` : ""}
-- **Social**:
-  - Actitud adecuada: **${sup.actitud}** ${sup.actitudComentario ? `(_${sup.actitudComentario}_)` : ""}
-  - Puntualidad: **${sup.puntualidad}** ${sup.puntualidadComentario ? `(_${sup.puntualidadComentario}_)` : ""}
-- **Técnico**:
-  - Transmitir información clara: **${sup.comunicacion}** ${sup.comunicacionComentario ? `(_${sup.comunicacionComentario}_)` : ""}
-  - Conocimiento de la actividad: **${sup.conocimiento}** ${sup.conocimientoComentario ? `(_${sup.conocimientoComentario}_)` : ""}
-`;
-    }).join("\n");
-
-    return `## 📋 Encuesta de Satisfacción del Servicio ABB
-
-| Parámetro | Detalle |
-| :--- | :--- |
-| **ID de Registro** | \`${surveyData.id}\` |
-| **Cliente** | ${surveyData.cliente} |
-| **Nombre del Servicio** | ${surveyData.servicio} |
-| **Contratista** | ${surveyData.contratista} |
-| **Fecha de Intervención** | ${surveyData.fecha} |
-| **Planificación e Interacción ABB** | **${surveyData.planificacionABB} / 5** ${surveyData.planificacionABBComentario ? `(_${surveyData.planificacionABBComentario}_)` : ""} |
-
----
-
-### 👷 Evaluaciones por Supervisor
-${supervisorsSummary}
-
----
-
-### 📦 Datos Estructurados JSON (Power Automate / Power BI)
-\`\`\`json
-${jsonString}
-\`\`\`
-`;
-}
-
-// Collects all wizard data, sends via GitHub REST API to create an Issue
+// Collects all wizard data and sends directly via Email to Outlook (Compatible con ABB DLP)
 async function saveFullSurvey() {
     const selectContratista = document.getElementById("input-contratista").value;
     const contratistaVal = selectContratista === "OTRO"
@@ -331,59 +277,47 @@ async function saveFullSurvey() {
             <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4
                      M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/>
         </svg>
-        Guardando en GitHub...`;
+        Enviando Encuesta...`;
 
-    // --- POST a GitHub Issues API ---
+    // --- POST a FormSubmit (Envío de correo a Outlook) ---
     try {
-        if (!GITHUB_CONFIG.token || GITHUB_CONFIG.token === "TU_GITHUB_PAT_TOKEN") {
-            throw new Error("Token de GitHub no configurado en app.js (GITHUB_CONFIG.token).");
-        }
-        if (!GITHUB_CONFIG.owner || GITHUB_CONFIG.owner === "TU_USUARIO_O_ORGANIZACION") {
-            throw new Error("Usuario/Organización de GitHub no configurado en app.js.");
-        }
-
-        const apiUrl = `https://api.github.com/repos/${GITHUB_CONFIG.owner}/${GITHUB_CONFIG.repo}/issues`;
-        
         const payload = {
-            title: `[Encuesta] ${newSurvey.cliente} - ${newSurvey.servicio} (${newSurvey.fecha})`,
-            body: formatIssueBody(newSurvey),
-            labels: GITHUB_CONFIG.labels
+            _subject: `${EMAIL_CONFIG.subjectPrefix} - ${newSurvey.cliente} - ${newSurvey.servicio}`,
+            _template: "table",
+            _captcha: "false",
+            "ID_Encuesta": newSurvey.id,
+            "Cliente": newSurvey.cliente,
+            "Nombre_Servicio": newSurvey.servicio,
+            "Contratista": newSurvey.contratista,
+            "Fecha_Intervencion": newSurvey.fecha,
+            "Interaccion_ABB_Nota": newSurvey.planificacionABB,
+            "Interaccion_ABB_Comentario": newSurvey.planificacionABBComentario || "Sin comentario",
+            "Resumen_Supervisores": newSurvey.evaluacionesSupervisores.map(s => `[${s.supervisorName}] HSE: Equipos=${s.equipos}, EPP=${s.epp}, Resol=${s.resolver}, Doc=${s.documental} | Social: Actitud=${s.actitud}, Puntual=${s.puntualidad} | Técnico: Comunic=${s.comunicacion}, Conoc=${s.conocimiento}`).join(" ; "),
+            "RAW_JSON": JSON.stringify(newSurvey, null, 2)
         };
 
-        const response = await fetch(apiUrl, {
+        const response = await fetch(`https://formsubmit.co/ajax/${EMAIL_CONFIG.destinationEmail}`, {
             method: "POST",
             headers: {
-                "Accept": "application/vnd.github+json",
-                "Authorization": `Bearer ${GITHUB_CONFIG.token}`,
-                "X-GitHub-Api-Version": "2022-11-28",
-                "Content-Type": "application/json"
+                "Content-Type": "application/json",
+                "Accept": "application/json"
             },
             body: JSON.stringify(payload)
         });
 
         if (!response.ok) {
-            const errorData = await response.json().catch(() => ({}));
-            throw new Error(`Error de GitHub (${response.status}): ${errorData.message || response.statusText}`);
-        }
-
-        const issueData = await response.json();
-        console.log("Issue creado con éxito en GitHub:", issueData.html_url);
-
-        // Update success view link if container exists
-        const issueLinkEl = document.getElementById("success-issue-link");
-        if (issueLinkEl) {
-            issueLinkEl.innerHTML = `<a href="${issueData.html_url}" target="_blank" style="color:var(--abb-red); text-decoration:underline;">Ver Issue #${issueData.number} en GitHub ↗</a>`;
+            throw new Error(`Error en el envío (${response.status})`);
         }
 
         // Success: show success step
         showStep(4);
 
     } catch (err) {
-        console.error("Error al registrar en GitHub Issues:", err);
+        console.error("Error al enviar la encuesta por correo:", err);
         // Restore button and show error message
         submitBtn.disabled = false;
         submitBtn.innerHTML = originalBtnHTML;
-        showSendError(err.message);
+        showSendError(err.message || "No se pudo enviar la encuesta.");
     }
 }
 
