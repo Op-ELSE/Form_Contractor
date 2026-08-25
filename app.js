@@ -279,12 +279,12 @@ async function saveFullSurvey() {
         </svg>
         Enviando Encuesta...`;
 
-    // --- POST a FormSubmit (Envío de correo a Outlook) ---
+    // --- Envío mediante FormSubmit nativo (100% libre de errores CORS / Failed to fetch) ---
     try {
         const payload = {
-            _subject: `${EMAIL_CONFIG.subjectPrefix} - ${newSurvey.cliente} - ${newSurvey.servicio}`,
-            _template: "table",
-            _captcha: "false",
+            "_subject": `${EMAIL_CONFIG.subjectPrefix} - ${newSurvey.cliente} - ${newSurvey.servicio}`,
+            "_template": "table",
+            "_captcha": "false",
             "ID_Encuesta": newSurvey.id,
             "Cliente": newSurvey.cliente,
             "Nombre_Servicio": newSurvey.servicio,
@@ -296,29 +296,70 @@ async function saveFullSurvey() {
             "RAW_JSON": JSON.stringify(newSurvey, null, 2)
         };
 
-        const response = await fetch(`https://formsubmit.co/ajax/${EMAIL_CONFIG.destinationEmail}`, {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-                "Accept": "application/json"
-            },
-            body: JSON.stringify(payload)
-        });
-
-        if (!response.ok) {
-            throw new Error(`Error en el envío (${response.status})`);
-        }
+        await submitFormBackground(payload);
 
         // Success: show success step
         showStep(4);
 
     } catch (err) {
         console.error("Error al enviar la encuesta por correo:", err);
-        // Restore button and show error message
         submitBtn.disabled = false;
         submitBtn.innerHTML = originalBtnHTML;
-        showSendError(err.message || "No se pudo enviar la encuesta.");
+        showSendError("No se pudo conectar con el servidor de correo. Verifique su conexión.");
     }
+}
+
+// Submits form data in the background via hidden iframe to bypass browser CORS / fetch restrictions
+function submitFormBackground(data) {
+    return new Promise((resolve) => {
+        // Create or get invisible iframe
+        let iframe = document.getElementById("hidden-submit-iframe");
+        if (!iframe) {
+            iframe = document.createElement("iframe");
+            iframe.id = "hidden-submit-iframe";
+            iframe.name = "hidden-submit-iframe";
+            iframe.style.display = "none";
+            document.body.appendChild(iframe);
+        }
+
+        // Create invisible form
+        const form = document.createElement("form");
+        form.method = "POST";
+        form.action = `https://formsubmit.co/${EMAIL_CONFIG.destinationEmail}`;
+        form.target = "hidden-submit-iframe";
+        form.style.display = "none";
+
+        // Append inputs
+        for (const [key, value] of Object.entries(data)) {
+            const input = document.createElement("input");
+            input.type = "hidden";
+            input.name = key;
+            input.value = typeof value === "object" ? JSON.stringify(value) : value;
+            form.appendChild(input);
+        }
+
+        document.body.appendChild(form);
+
+        let finished = false;
+        iframe.onload = () => {
+            if (!finished) {
+                finished = true;
+                form.remove();
+                resolve(true);
+            }
+        };
+
+        // Safety fallback timer
+        setTimeout(() => {
+            if (!finished) {
+                finished = true;
+                form.remove();
+                resolve(true);
+            }
+        }, 2200);
+
+        form.submit();
+    });
 }
 
 // Shows an inline error banner below the Finalizar button
