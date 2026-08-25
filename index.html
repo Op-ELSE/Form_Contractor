@@ -1,0 +1,462 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Plataforma de encuestas de satisfacción y evaluación de contratistas para ABB.">
+    <title>ABB - Encuesta de Satisfacción del Servicio</title>
+    <!-- Google Fonts: Outfit for premium modern branding -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- CSS Stylesheet -->
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <!-- Corporate Header ABB -->
+    <header class="abb-header">
+        <div class="header-container">
+            <div class="abb-brand">
+                <!-- ABB Official Logo SVG -->
+                <svg class="abb-logo-svg" viewBox="0 0 160 56" xmlns="http://www.w3.org/2000/svg" aria-label="ABB Logo">
+                    <rect width="160" height="56" fill="#FF000F" rx="2"/>
+                    <text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle"
+                          font-family="'Outfit', Arial Black, sans-serif"
+                          font-weight="900"
+                          font-size="34"
+                          letter-spacing="-1"
+                          fill="#FFFFFF">ABB</text>
+                </svg>
+                <span class="brand-divider"></span>
+                <span class="app-title">Satisfacción del Servicio</span>
+            </div>
+        </div>
+    </header>
+
+    <main class="main-content">
+        <section id="view-survey" class="content-view active-view">
+            <div class="survey-container">
+                <div class="survey-card">
+                    <!-- Progress Bar -->
+                    <div class="progress-container">
+                        <div class="progress-bar-background">
+                            <div id="survey-progress" class="progress-bar-fill" style="width: 25%;"></div>
+                        </div>
+                        <div class="steps-indicator">
+                            <span class="step-dot active" id="dot-1">1</span>
+                            <span class="step-dot" id="dot-2">2</span>
+                            <span class="step-dot" id="dot-3">3</span>
+                            <span class="step-dot" id="dot-4">✓</span>
+                        </div>
+                    </div>
+
+                    <!-- STEP 1: Datos Generales -->
+                    <div id="step-general" class="survey-step active-step">
+                        <div class="step-header">
+                            <h2>1. Información General del Servicio</h2>
+                            <p>Registre los datos básicos de la intervención realizada.</p>
+                        </div>
+                        
+                        <form id="form-general" onsubmit="event.preventDefault(); nextStep();">
+                            <div class="form-grid">
+                                <div class="form-group">
+                                    <label for="input-cliente">Cliente <span class="required">*</span></label>
+                                    <input type="text" id="input-cliente" required placeholder="Ej. Minera Las Bambas">
+                                </div>
+                                <div class="form-group">
+                                    <label for="input-servicio">Nombre del Servicio <span class="required">*</span></label>
+                                    <input type="text" id="input-servicio" required placeholder="Ej. Mantenimiento de Transformadores">
+                                </div>
+                                <div class="form-group">
+                                    <label for="input-contratista">Nombre del Contratista <span class="required">*</span></label>
+                                    <select id="input-contratista" required onchange="toggleContratistaOtro()">
+                                        <option value="" disabled selected>Seleccione contratista...</option>
+                                        <option value="COSERPO">COSERPO</option>
+                                        <option value="EA ENGINEERING">EA ENGINEERING</option>
+                                        <option value="GEEP">GEEP</option>
+                                        <option value="GEEP - TALLER">GEEP - TALLER</option>
+                                        <option value="GREENPROSOL">GREENPROSOL</option>
+                                        <option value="GRUPO HSEC">GRUPO HSEC</option>
+                                        <option value="HITACHI">HITACHI</option>
+                                        <option value="HSEC">HSEC</option>
+                                        <option value="METAL SUR">METAL SUR</option>
+                                        <option value="MUSOQ">MUSOQ</option>
+                                        <option value="NAKAMA">NAKAMA</option>
+                                        <option value="PROSEGEL">PROSEGEL</option>
+                                        <option value="RETYGSAC">RETYGSAC</option>
+                                        <option value="TRINY">TRINY</option>
+                                        <option value="OTRO">OTRO</option>
+                                    </select>
+                                </div>
+                                <div class="form-group" id="group-contratista-otro" style="display: none;">
+                                    <label for="input-contratista-otro">Especifique Contratista <span class="required">*</span></label>
+                                    <input type="text" id="input-contratista-otro" placeholder="Nombre de la empresa contratista">
+                                </div>
+                                <div class="form-group">
+                                    <label for="input-fecha">Fecha de Intervención <span class="required">*</span></label>
+                                    <input type="date" id="input-fecha" required>
+                                </div>
+                            </div>
+
+                            <!-- Predefined Supervisors List -->
+                            <div class="supervisors-section">
+                                <label class="section-label">Supervisores a Evaluar <span class="required">*</span></label>
+                                <p class="section-desc">Seleccione uno o más supervisores de ABB que participaron. Se generará una evaluación individual para cada uno.</p>
+                                
+                                <div class="supervisors-checkbox-grid">
+                                    <div class="supervisor-checkbox-item">
+                                        <input type="checkbox" id="sup-jose" name="check-supervisors" value="Jose Herrera">
+                                        <label for="sup-jose">Jose Herrera</label>
+                                    </div>
+                                    <div class="supervisor-checkbox-item">
+                                        <input type="checkbox" id="sup-delny" name="check-supervisors" value="Delny Galindo">
+                                        <label for="sup-delny">Delny Galindo</label>
+                                    </div>
+                                    <div class="supervisor-checkbox-item">
+                                        <input type="checkbox" id="sup-fredy" name="check-supervisors" value="Fredy Ureta">
+                                        <label for="sup-fredy">Fredy Ureta</label>
+                                    </div>
+                                    <div class="supervisor-checkbox-item">
+                                        <input type="checkbox" id="sup-saul" name="check-supervisors" value="Saul Suarez">
+                                        <label for="sup-saul">Saul Suarez</label>
+                                    </div>
+                                    <div class="supervisor-checkbox-item">
+                                        <input type="checkbox" id="sup-david" name="check-supervisors" value="David Ñahui">
+                                        <label for="sup-david">David Ñahui</label>
+                                    </div>
+                                    <div class="supervisor-checkbox-item">
+                                        <input type="checkbox" id="sup-mario" name="check-supervisors" value="Mario Arellano">
+                                        <label for="sup-mario">Mario Arellano</label>
+                                    </div>
+                                    <div class="supervisor-checkbox-item">
+                                        <input type="checkbox" id="sup-carlos" name="check-supervisors" value="Carlos Sotomayor">
+                                        <label for="sup-carlos">Carlos Sotomayor</label>
+                                    </div>
+                                    <div class="supervisor-checkbox-item">
+                                        <input type="checkbox" id="sup-anthony" name="check-supervisors" value="Anthony Choquehuanca">
+                                        <label for="sup-anthony">Anthony Choquehuanca</label>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="step-actions">
+                                <span></span>
+                                <button type="submit" class="btn btn-primary">
+                                    Siguiente
+                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+
+                    <!-- STEP 2: Evaluación de Supervisores (Dinámico) -->
+                    <div id="step-supervisors-eval" class="survey-step">
+                        <div class="step-header">
+                            <h2 id="eval-supervisor-title">2. Evaluación de Supervisor</h2>
+                            <div id="eval-supervisor-banner" class="supervisor-banner">
+                                <span class="banner-label">Evaluando al supervisor:</span>
+                                <span id="eval-supervisor-name" class="banner-name">Nombre del Supervisor</span>
+                            </div>
+                        </div>
+                        
+                        <form id="form-supervisor-eval" onsubmit="event.preventDefault(); submitSupervisorEval();">
+                            
+                            <!-- SECCIÓN: ASPECTOS HSE -->
+                            <div class="question-section-divider">
+                                <h3>A. Aspectos HSE</h3>
+                            </div>
+
+                            <!-- Q2.1: Equipos y Herramientas -->
+                            <div class="question-card">
+                                <div class="question-title">
+                                    <span class="question-num">2.1</span>
+                                    <label>¿Los Equipos y Herramientas de ABB están en buen estado?</label>
+                                </div>
+                                <div class="rating-options">
+                                    <input type="radio" name="qs_equipos" id="qs_equipos_1" value="1" required>
+                                    <label for="qs_equipos_1" class="rating-box">1</label>
+                                    <input type="radio" name="qs_equipos" id="qs_equipos_2" value="2">
+                                    <label for="qs_equipos_2" class="rating-box">2</label>
+                                    <input type="radio" name="qs_equipos" id="qs_equipos_3" value="3">
+                                    <label for="qs_equipos_3" class="rating-box">3</label>
+                                    <input type="radio" name="qs_equipos" id="qs_equipos_4" value="4">
+                                    <label for="qs_equipos_4" class="rating-box">4</label>
+                                    <input type="radio" name="qs_equipos" id="qs_equipos_5" value="5">
+                                    <label for="qs_equipos_5" class="rating-box">5</label>
+                                    <input type="radio" name="qs_equipos" id="qs_equipos_na" value="na">
+                                    <label for="qs_equipos_na" class="rating-box na">N/A</label>
+                                </div>
+                                <div class="question-comment">
+                                    <input type="text" id="comm_qs_equipos" placeholder="Comentario sobre esta respuesta (Opcional)" class="question-comment-input">
+                                </div>
+                            </div>
+
+                            <!-- Q2.2: EPPs y Uniforme -->
+                            <div class="question-card">
+                                <div class="question-title">
+                                    <span class="question-num">2.2</span>
+                                    <label>¿El supervisor se encuentra correctamente uniformado y cuenta con los EPPs apropiados?</label>
+                                </div>
+                                <div class="rating-options">
+                                    <input type="radio" name="qs_epp" id="qs_epp_1" value="1" required>
+                                    <label for="qs_epp_1" class="rating-box">1</label>
+                                    <input type="radio" name="qs_epp" id="qs_epp_2" value="2">
+                                    <label for="qs_epp_2" class="rating-box">2</label>
+                                    <input type="radio" name="qs_epp" id="qs_epp_3" value="3">
+                                    <label for="qs_epp_3" class="rating-box">3</label>
+                                    <input type="radio" name="qs_epp" id="qs_epp_4" value="4">
+                                    <label for="qs_epp_4" class="rating-box">4</label>
+                                    <input type="radio" name="qs_epp" id="qs_epp_5" value="5">
+                                    <label for="qs_epp_5" class="rating-box">5</label>
+                                    <input type="radio" name="qs_epp" id="qs_epp_na" value="na">
+                                    <label for="qs_epp_na" class="rating-box na">N/A</label>
+                                </div>
+                                <div class="question-comment">
+                                    <input type="text" id="comm_qs_epp" placeholder="Comentario sobre esta respuesta (Opcional)" class="question-comment-input">
+                                </div>
+                            </div>
+
+                            <!-- Q2.3: Consultas / Resolucion -->
+                            <div class="question-card">
+                                <div class="question-title">
+                                    <span class="question-num">2.3</span>
+                                    <label>¿El supervisor fue capaz de resolver problemas o consultas de manera efectiva?</label>
+                                </div>
+                                <div class="rating-options">
+                                    <input type="radio" name="qs_resolver" id="qs_resolver_1" value="1" required>
+                                    <label for="qs_resolver_1" class="rating-box">1</label>
+                                    <input type="radio" name="qs_resolver" id="qs_resolver_2" value="2">
+                                    <label for="qs_resolver_2" class="rating-box">2</label>
+                                    <input type="radio" name="qs_resolver" id="qs_resolver_3" value="3">
+                                    <label for="qs_resolver_3" class="rating-box">3</label>
+                                    <input type="radio" name="qs_resolver" id="qs_resolver_4" value="4">
+                                    <label for="qs_resolver_4" class="rating-box">4</label>
+                                    <input type="radio" name="qs_resolver" id="qs_resolver_5" value="5">
+                                    <label for="qs_resolver_5" class="rating-box">5</label>
+                                    <input type="radio" name="qs_resolver" id="qs_resolver_na" value="na">
+                                    <label for="qs_resolver_na" class="rating-box na">N/A</label>
+                                </div>
+                                <div class="question-comment">
+                                    <input type="text" id="comm_qs_resolver" placeholder="Comentario sobre esta respuesta (Opcional)" class="question-comment-input">
+                                </div>
+                            </div>
+
+                            <!-- Q2.4: Llenado de seguridad -->
+                            <div class="question-card">
+                                <div class="question-title">
+                                    <span class="question-num">2.4</span>
+                                    <label>¿El supervisor participa activamente en el llenado de los documentos de seguridad y cumple con los lineamientos de seguridad?</label>
+                                </div>
+                                <div class="rating-options">
+                                    <input type="radio" name="qs_documental" id="qs_documental_1" value="1" required>
+                                    <label for="qs_documental_1" class="rating-box">1</label>
+                                    <input type="radio" name="qs_documental" id="qs_documental_2" value="2">
+                                    <label for="qs_documental_2" class="rating-box">2</label>
+                                    <input type="radio" name="qs_documental" id="qs_documental_3" value="3">
+                                    <label for="qs_documental_3" class="rating-box">3</label>
+                                    <input type="radio" name="qs_documental" id="qs_documental_4" value="4">
+                                    <label for="qs_documental_4" class="rating-box">4</label>
+                                    <input type="radio" name="qs_documental" id="qs_documental_5" value="5">
+                                    <label for="qs_documental_5" class="rating-box">5</label>
+                                    <input type="radio" name="qs_documental" id="qs_documental_na" value="na">
+                                    <label for="qs_documental_na" class="rating-box na">N/A</label>
+                                </div>
+                                <div class="question-comment">
+                                    <input type="text" id="comm_qs_documental" placeholder="Comentario sobre esta respuesta (Opcional)" class="question-comment-input">
+                                </div>
+                            </div>
+
+                            <!-- SECCIÓN: SOCIAL -->
+                            <div class="question-section-divider">
+                                <h3>B. Aspectos Sociales</h3>
+                            </div>
+
+                            <!-- Q2.5: Actitud adecuada -->
+                            <div class="question-card">
+                                <div class="question-title">
+                                    <span class="question-num">2.5</span>
+                                    <label>¿Consideras que la actitud del supervisor es la adecuada para la actividad encomendada?</label>
+                                </div>
+                                <div class="rating-options">
+                                    <input type="radio" name="qs_actitud" id="qs_actitud_1" value="1" required>
+                                    <label for="qs_actitud_1" class="rating-box">1</label>
+                                    <input type="radio" name="qs_actitud" id="qs_actitud_2" value="2">
+                                    <label for="qs_actitud_2" class="rating-box">2</label>
+                                    <input type="radio" name="qs_actitud" id="qs_actitud_3" value="3">
+                                    <label for="qs_actitud_3" class="rating-box">3</label>
+                                    <input type="radio" name="qs_actitud" id="qs_actitud_4" value="4">
+                                    <label for="qs_actitud_4" class="rating-box">4</label>
+                                    <input type="radio" name="qs_actitud" id="qs_actitud_5" value="5">
+                                    <label for="qs_actitud_5" class="rating-box">5</label>
+                                    <input type="radio" name="qs_actitud" id="qs_actitud_na" value="na">
+                                    <label for="qs_actitud_na" class="rating-box na">N/A</label>
+                                </div>
+                                <div class="question-comment">
+                                    <input type="text" id="comm_qs_actitud" placeholder="Comentario sobre esta respuesta (Opcional)" class="question-comment-input">
+                                </div>
+                            </div>
+
+                            <!-- Q2.6: Puntualidad -->
+                            <div class="question-card">
+                                <div class="question-title">
+                                    <span class="question-num">2.6</span>
+                                    <label>¿Demuestra puntualidad según la hora fijada?</label>
+                                </div>
+                                <div class="rating-options">
+                                    <input type="radio" name="qs_puntualidad" id="qs_puntualidad_1" value="1" required>
+                                    <label for="qs_puntualidad_1" class="rating-box">1</label>
+                                    <input type="radio" name="qs_puntualidad" id="qs_puntualidad_2" value="2">
+                                    <label for="qs_puntualidad_2" class="rating-box">2</label>
+                                    <input type="radio" name="qs_puntualidad" id="qs_puntualidad_3" value="3">
+                                    <label for="qs_puntualidad_3" class="rating-box">3</label>
+                                    <input type="radio" name="qs_puntualidad" id="qs_puntualidad_4" value="4">
+                                    <label for="qs_puntualidad_4" class="rating-box">4</label>
+                                    <input type="radio" name="qs_puntualidad" id="qs_puntualidad_5" value="5">
+                                    <label for="qs_puntualidad_5" class="rating-box">5</label>
+                                    <input type="radio" name="qs_puntualidad" id="qs_puntualidad_na" value="na">
+                                    <label for="qs_puntualidad_na" class="rating-box na">N/A</label>
+                                </div>
+                                <div class="question-comment">
+                                    <input type="text" id="comm_qs_puntualidad" placeholder="Comentario sobre esta respuesta (Opcional)" class="question-comment-input">
+                                </div>
+                            </div>
+
+                            <!-- SECCIÓN: TÉCNICO -->
+                            <div class="question-section-divider">
+                                <h3>C. Aspectos Técnicos</h3>
+                            </div>
+
+                            <!-- Q2.7: Transmitir información -->
+                            <div class="question-card">
+                                <div class="question-title">
+                                    <span class="question-num">2.7</span>
+                                    <label>¿El supervisor tiene la habilidad para transmitir información de manera clara y comprensible demostrando una actitud profesional y respetuosa?</label>
+                                </div>
+                                <div class="rating-options">
+                                    <input type="radio" name="qs_comunicacion" id="qs_comunicacion_1" value="1" required>
+                                    <label for="qs_comunicacion_1" class="rating-box">1</label>
+                                    <input type="radio" name="qs_comunicacion" id="qs_comunicacion_2" value="2">
+                                    <label for="qs_comunicacion_2" class="rating-box">2</label>
+                                    <input type="radio" name="qs_comunicacion" id="qs_comunicacion_3" value="3">
+                                    <label for="qs_comunicacion_3" class="rating-box">3</label>
+                                    <input type="radio" name="qs_comunicacion" id="qs_comunicacion_4" value="4">
+                                    <label for="qs_comunicacion_4" class="rating-box">4</label>
+                                    <input type="radio" name="qs_comunicacion" id="qs_comunicacion_5" value="5">
+                                    <label for="qs_comunicacion_5" class="rating-box">5</label>
+                                    <input type="radio" name="qs_comunicacion" id="qs_comunicacion_na" value="na">
+                                    <label for="qs_comunicacion_na" class="rating-box na">N/A</label>
+                                </div>
+                                <div class="question-comment">
+                                    <input type="text" id="comm_qs_comunicacion" placeholder="Comentario sobre esta respuesta (Opcional)" class="question-comment-input">
+                                </div>
+                            </div>
+
+                            <!-- Q2.8: Conocimiento de la actividad -->
+                            <div class="question-card">
+                                <div class="question-title">
+                                    <span class="question-num">2.8</span>
+                                    <label>¿El supervisor demuestra conocimiento en la actividad ejecutada y respeta el alcance acordado con el cliente?</label>
+                                </div>
+                                <div class="rating-options">
+                                    <input type="radio" name="qs_conocimiento" id="qs_conocimiento_1" value="1" required>
+                                    <label for="qs_conocimiento_1" class="rating-box">1</label>
+                                    <input type="radio" name="qs_conocimiento" id="qs_conocimiento_2" value="2">
+                                    <label for="qs_conocimiento_2" class="rating-box">2</label>
+                                    <input type="radio" name="qs_conocimiento" id="qs_conocimiento_3" value="3">
+                                    <label for="qs_conocimiento_3" class="rating-box">3</label>
+                                    <input type="radio" name="qs_conocimiento" id="qs_conocimiento_4" value="4">
+                                    <label for="qs_conocimiento_4" class="rating-box">4</label>
+                                    <input type="radio" name="qs_conocimiento" id="qs_conocimiento_5" value="5">
+                                    <label for="qs_conocimiento_5" class="rating-box">5</label>
+                                    <input type="radio" name="qs_conocimiento" id="qs_conocimiento_na" value="na">
+                                    <label for="qs_conocimiento_na" class="rating-box na">N/A</label>
+                                </div>
+                                <div class="question-comment">
+                                    <input type="text" id="comm_qs_conocimiento" placeholder="Comentario sobre esta respuesta (Opcional)" class="question-comment-input">
+                                </div>
+                            </div>
+
+                            <div class="step-actions">
+                                <button type="button" class="btn btn-secondary" onclick="prevStep()">
+                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+                                    Atrás
+                                </button>
+                                <button type="submit" class="btn btn-primary" id="btn-submit-supervisor">
+                                    Siguiente Supervisor
+                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+
+                    <!-- STEP 3: Planificación y Programación (Interacción ABB - General) -->
+                    <div id="step-planificacion-eval" class="survey-step">
+                        <div class="step-header">
+                            <h2>3. Planificación y Programación</h2>
+                            <p>Califique la interacción global con ABB durante la coordinación del servicio.</p>
+                        </div>
+                        
+                        <form id="form-planificacion-eval" onsubmit="event.preventDefault(); saveFullSurvey();">
+                            <!-- Q3.1: Interaccion ABB -->
+                            <div class="question-card">
+                                <div class="question-title">
+                                    <span class="question-num">3.1</span>
+                                    <label>En cuanto a la interacción con ABB: ¿Se encuentra satisfecho con la coordinación, comunicación y respuesta durante la programación y ejecución?</label>
+                                </div>
+                                <div class="rating-options">
+                                    <input type="radio" name="q_planificacion" id="q_plan_1" value="1" required>
+                                    <label for="q_plan_1" class="rating-box">1</label>
+                                    <input type="radio" name="q_planificacion" id="q_plan_2" value="2">
+                                    <label for="q_plan_2" class="rating-box">2</label>
+                                    <input type="radio" name="q_planificacion" id="q_plan_3" value="3">
+                                    <label for="q_plan_3" class="rating-box">3</label>
+                                    <input type="radio" name="q_planificacion" id="q_plan_4" value="4">
+                                    <label for="q_plan_4" class="rating-box">4</label>
+                                    <input type="radio" name="q_planificacion" id="q_plan_5" value="5">
+                                    <label for="q_plan_5" class="rating-box">5</label>
+                                    <input type="radio" name="q_planificacion" id="q_plan_na" value="na">
+                                    <label for="q_plan_na" class="rating-box na">N/A</label>
+                                </div>
+                                <div class="question-comment">
+                                    <input type="text" id="comm_q_planificacion" placeholder="Comentario sobre esta respuesta (Opcional)" class="question-comment-input">
+                                </div>
+                            </div>
+
+                            <div class="step-actions">
+                                <button type="button" class="btn btn-secondary" onclick="prevStep()">
+                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+                                    Atrás
+                                </button>
+                                <button type="submit" class="btn btn-primary">
+                                    Finalizar Encuesta
+                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+
+                    <!-- STEP 4: Pantalla de Éxito -->
+                    <div id="step-success" class="survey-step text-center">
+                        <div class="success-icon-container">
+                            <svg class="success-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                        </div>
+                        <h2>¡Muchas Gracias!</h2>
+                        <p>La encuesta ha sido procesada con éxito.</p>
+                        <p class="success-subtext">Sus respuestas ayudarán a mejorar la calidad de nuestros servicios y la gestión de contratistas.</p>
+                        
+                        <div class="success-actions" style="flex-direction: column; gap: 12px; max-width: 320px; margin: 24px auto 0 auto;">
+                            <button class="btn btn-primary" onclick="resetSurvey()" style="width: 100%;">
+                                Registrar Nueva Encuesta
+                            </button>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- App Script logic -->
+    <script src="app.js"></script>
+</body>
+</html>
