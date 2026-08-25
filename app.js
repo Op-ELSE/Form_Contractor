@@ -6,9 +6,10 @@
 // 1. Crea un Personal Access Token (Classic o Fine-Grained) en GitHub con permisos de 'issues' (read & write).
 // 2. Coloca aquí tu usuario/organización, el nombre del repositorio y el Token:
 const GITHUB_CONFIG = {
-    owner: "TU_USUARIO_O_ORGANIZACION", // ej: "pegegar"
-    repo: "NOMBRE_DEL_REPOSITORIO",      // ej: "Plataforma-encuestas"
-    token: "TU_GITHUB_PAT_TOKEN",        // Token: ghp_... o github_pat_...
+const GITHUB_CONFIG = {
+    owner: "op-else",                    // ✅ Ya configurado
+    repo: "Form_Contractor",             // ✅ Ya configurado
+    token: "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",        // Token: ghp_... o github_pat_...
     labels: ["encuesta", "satisfaccion-servicio"]
 };
 
