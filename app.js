@@ -1,8 +1,5 @@
-// *** CONFIGURACIÓN DE ENVÍO POR CORREO (COMPATIBLE CON ABB DLP) ***
-const EMAIL_CONFIG = {
-    destinationEmail: "geraldine.garcia-alarcon@pe.abb.com",
-    subjectPrefix: "[ENCUESTA_ABB_DATA]"
-};
+// *** CONFIGURACIÓN DE ENVÍO CON GOOGLE APPS SCRIPT (GMAIL) ***
+const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbw0KjHVN1ET48d3aKf1krgXp-XkT_Ki33BkFvJCNa3Mu2TlQhb9QlL2gSE8blak6PEH/exec";
 
 // Global state variables
 let surveys = [];
@@ -279,12 +276,9 @@ async function saveFullSurvey() {
         </svg>
         Enviando Encuesta...`;
 
-    // --- Envío mediante FormSubmit nativo (100% libre de errores CORS / Failed to fetch) ---
+    // --- Envío directo a Google Apps Script (Gmail) ---
     try {
         const payload = {
-            "_subject": `${EMAIL_CONFIG.subjectPrefix} - ${newSurvey.cliente} - ${newSurvey.servicio}`,
-            "_template": "table",
-            "_captcha": "false",
             "ID_Encuesta": newSurvey.id,
             "Cliente": newSurvey.cliente,
             "Nombre_Servicio": newSurvey.servicio,
@@ -292,73 +286,35 @@ async function saveFullSurvey() {
             "Fecha_Intervencion": newSurvey.fecha,
             "Interaccion_ABB_Nota": newSurvey.planificacionABB,
             "Interaccion_ABB_Comentario": newSurvey.planificacionABBComentario || "Sin comentario",
-            "Resumen_Supervisores": newSurvey.evaluacionesSupervisores.map(s => `[${s.supervisorName}] HSE: Equipos=${s.equipos}, EPP=${s.epp}, Resol=${s.resolver}, Doc=${s.documental} | Social: Actitud=${s.actitud}, Puntual=${s.puntualidad} | Técnico: Comunic=${s.comunicacion}, Conoc=${s.conocimiento}`).join(" ; "),
-            "RAW_JSON": JSON.stringify(newSurvey, null, 2)
+            "Resumen_Supervisores": newSurvey.evaluacionesSupervisores.map(s => 
+                `[${s.supervisorName}] HSE: Equipos=${s.equipos}, EPP=${s.epp}, Resol=${s.resolver}, Doc=${s.documental} | Social: Actitud=${s.actitud}, Puntual=${s.puntualidad} | Técnico: Comunic=${s.comunicacion}, Conoc=${s.conocimiento}`
+            ).join(" ; "),
+            "evaluacionesSupervisores": newSurvey.evaluacionesSupervisores,
+            "survey": newSurvey
         };
 
-        await submitFormBackground(payload);
+        await submitToGoogleScript(payload);
 
         // Success: show success step
         showStep(4);
 
     } catch (err) {
-        console.error("Error al enviar la encuesta por correo:", err);
+        console.error("Error al enviar la encuesta a Google:", err);
         submitBtn.disabled = false;
         submitBtn.innerHTML = originalBtnHTML;
-        showSendError("No se pudo conectar con el servidor de correo. Verifique su conexión.");
+        showSendError("No se pudo conectar con el servicio de Google. Verifique su conexión.");
     }
 }
 
-// Submits form data in the background via hidden iframe to bypass browser CORS / fetch restrictions
-function submitFormBackground(data) {
-    return new Promise((resolve) => {
-        // Create or get invisible iframe
-        let iframe = document.getElementById("hidden-submit-iframe");
-        if (!iframe) {
-            iframe = document.createElement("iframe");
-            iframe.id = "hidden-submit-iframe";
-            iframe.name = "hidden-submit-iframe";
-            iframe.style.display = "none";
-            document.body.appendChild(iframe);
-        }
-
-        // Create invisible form
-        const form = document.createElement("form");
-        form.method = "POST";
-        form.action = `https://formsubmit.co/${EMAIL_CONFIG.destinationEmail}`;
-        form.target = "hidden-submit-iframe";
-        form.style.display = "none";
-
-        // Append inputs
-        for (const [key, value] of Object.entries(data)) {
-            const input = document.createElement("input");
-            input.type = "hidden";
-            input.name = key;
-            input.value = typeof value === "object" ? JSON.stringify(value) : value;
-            form.appendChild(input);
-        }
-
-        document.body.appendChild(form);
-
-        let finished = false;
-        iframe.onload = () => {
-            if (!finished) {
-                finished = true;
-                form.remove();
-                resolve(true);
-            }
-        };
-
-        // Safety fallback timer
-        setTimeout(() => {
-            if (!finished) {
-                finished = true;
-                form.remove();
-                resolve(true);
-            }
-        }, 2200);
-
-        form.submit();
+// Submits form data to Google Apps Script Web App
+async function submitToGoogleScript(data) {
+    return fetch(GOOGLE_SCRIPT_URL, {
+        method: "POST",
+        mode: "no-cors",
+        headers: {
+            "Content-Type": "text/plain;charset=utf-8"
+        },
+        body: JSON.stringify(data)
     });
 }
 
