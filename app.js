@@ -1,5 +1,5 @@
 // *** CONFIGURACIÓN DE ENVÍO CON GOOGLE APPS SCRIPT (GMAIL) ***
-const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzc8ZHkqa-vFCR0h_HroDngp0B5qf_irYQakBnnC-c0TE0gglIL36CAXZG-Ub2Tx8yw/exec";
+const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyu-dKmjvhWnlV2Z3le5Nlwq6iaMioR4eiCJ5KwS0yk3ZdXgdeUCEBfGbTmwmVtYL5d/exec";
 
 // Global state variables
 let surveys = [];
