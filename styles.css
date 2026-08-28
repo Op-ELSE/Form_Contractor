@@ -596,12 +596,14 @@ input, select, textarea, button {
     background-color: var(--success-light);
     border-color: var(--success-green);
     color: var(--success-green);
+    box-shadow: 0 0 14px rgba(0, 133, 67, 0.35);
 }
 
 .toggle-options input[value="no"]:checked + .toggle-box {
     background-color: #FFF0F1;
     border-color: var(--error-red);
     color: var(--error-red);
+    box-shadow: 0 0 14px rgba(210, 18, 46, 0.25);
 }
 
 .toggle-options input[value="na"]:checked + .toggle-box {
@@ -1233,4 +1235,219 @@ input, select, textarea, button {
     animation: spin 0.9s linear infinite;
     flex-shrink: 0;
 }
+
+.btn-block {
+    width: 100%;
+}
+
+/* ==========================================================================
+   SHAKE ANIMATION & VALIDATION ERRORS
+   ========================================================================== */
+@keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    20%, 60% { transform: translateX(-8px); }
+    40%, 80% { transform: translateX(8px); }
+}
+
+.shake {
+    animation: shake 0.45s ease-in-out;
+}
+
+/* Question card in error state */
+.question-card.field-error {
+    border-color: var(--abb-red) !important;
+    background-color: #FFFDFD;
+    box-shadow: 0 0 0 3px rgba(255, 0, 15, 0.18) !important;
+}
+
+.error-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background-color: #FFF0F1;
+    color: var(--error-red);
+    font-size: 0.8rem;
+    font-weight: 700;
+    padding: 4px 10px;
+    border-radius: var(--border-radius-sm);
+    border: 1px solid rgba(210, 18, 46, 0.25);
+    margin-top: 8px;
+    animation: fadeIn 0.25s ease-out;
+}
+
+/* Real-time required comment styles (Score <= 3) */
+.comment-required {
+    border: 2px solid var(--abb-red) !important;
+    background-color: #FFF9F9 !important;
+    box-shadow: 0 0 0 3px rgba(255, 0, 15, 0.12) !important;
+}
+
+.comment-required::placeholder {
+    color: #D2122E !important;
+    font-weight: 600;
+}
+
+.comment-warning-msg {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    color: #B91C1C;
+    font-size: 0.82rem;
+    font-weight: 600;
+    margin-top: 6px;
+    animation: fadeIn 0.2s ease-in;
+}
+
+/* ==========================================================================
+   CORPORATE LOCK SCREEN MODAL (ACCESS BY OS)
+   ========================================================================== */
+.lock-screen-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(15, 23, 42, 0.88);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 99999;
+    padding: 20px;
+    opacity: 1;
+    visibility: visible;
+    transition: opacity 0.4s ease, visibility 0.4s ease;
+}
+
+.lock-screen-overlay.unlocked {
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+}
+
+.lock-card {
+    background: var(--white);
+    max-width: 460px;
+    width: 100%;
+    border-radius: var(--border-radius-lg);
+    box-shadow: var(--shadow-lg), 0 20px 50px rgba(0, 0, 0, 0.35);
+    border-top: 4px solid var(--abb-red);
+    padding: 32px 28px;
+    text-align: center;
+    position: relative;
+    animation: fadeIn 0.3s ease-out;
+}
+
+.lock-header {
+    margin-bottom: 24px;
+}
+
+.lock-logo {
+    height: 36px;
+    width: auto;
+    object-fit: contain;
+    margin-bottom: 16px;
+}
+
+.lock-header h2 {
+    font-size: 1.35rem;
+    font-weight: 800;
+    color: var(--dark-charcoal);
+    margin-bottom: 8px;
+    letter-spacing: -0.3px;
+}
+
+.lock-subtitle {
+    font-size: 0.9rem;
+    color: var(--medium-gray);
+    line-height: 1.45;
+}
+
+.lock-input-group {
+    text-align: left;
+    margin-bottom: 20px;
+}
+
+.lock-input-group label {
+    display: block;
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--dark-charcoal);
+    margin-bottom: 8px;
+}
+
+.input-with-icon {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.input-with-icon .lock-icon {
+    position: absolute;
+    left: 14px;
+    color: var(--medium-gray);
+    pointer-events: none;
+}
+
+.input-with-icon input {
+    width: 100%;
+    padding: 12px 14px 12px 42px;
+    border: 2px solid var(--border-gray);
+    border-radius: var(--border-radius-md);
+    font-size: 1rem;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    outline: none;
+    transition: var(--transition-fast);
+    background-color: var(--light-gray);
+    color: var(--dark-charcoal);
+}
+
+.input-with-icon input:focus {
+    border-color: var(--abb-red);
+    background-color: var(--white);
+    box-shadow: 0 0 0 4px rgba(255, 0, 15, 0.12);
+}
+
+.lock-error-msg {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    color: var(--error-red);
+    font-size: 0.85rem;
+    font-weight: 600;
+    margin-top: 8px;
+}
+
+.lock-invalid-banner {
+    display: flex;
+    gap: 14px;
+    text-align: left;
+    background-color: #FFF0F1;
+    border: 1.5px solid var(--abb-red);
+    border-radius: var(--border-radius-md);
+    padding: 16px;
+    color: #991B1B;
+}
+
+.lock-invalid-banner svg {
+    flex-shrink: 0;
+    color: var(--abb-red);
+    margin-top: 2px;
+}
+
+.lock-invalid-banner h4 {
+    font-size: 0.95rem;
+    font-weight: 700;
+    margin-bottom: 4px;
+    color: var(--abb-red);
+}
+
+.lock-invalid-banner p {
+    font-size: 0.85rem;
+    line-height: 1.4;
+    color: #7F1D1D;
+}
+
 
